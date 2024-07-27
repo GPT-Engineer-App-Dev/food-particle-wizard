@@ -1,16 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GPT Engineer</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Particle Accelerator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            text-align: center;
+        }
+        #accelerator {
+            width: 600px;
+            height: 400px;
+            border: 2px solid #333;
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+            background-color: #fff;
+        }
+        .particle {
+            position: absolute;
+            font-size: 24px;
+            transition: all 0.1s linear;
+        }
+        .controls {
+            margin-top: 20px;
+        }
+        select, input, button {
+            margin: 5px;
+            padding: 5px;
+        }
+    </style>
 </head>
-
 <body>
-  Your blank canvas
-  <!-- insert your changes here -->
-</body>
+    <div class="container">
+        <h1>Food Particle Accelerator</h1>
+        <div id="accelerator"></div>
+        <div class="controls">
+            <select id="foodType">
+                <option value="🍎">Apple</option>
+                <option value="🍌">Banana</option>
+                <option value="🍕">Pizza</option>
+                <option value="🍔">Burger</option>
+                <option value="🍦">Ice Cream</option>
+            </select>
+            <input type="range" id="speed" min="1" max="10" value="5">
+            <button id="start">Start</button>
+            <button id="stop">Stop</button>
+        </div>
+    </div>
+    <script>
+        const accelerator = document.getElementById('accelerator');
+        const foodTypeSelect = document.getElementById('foodType');
+        const speedInput = document.getElementById('speed');
+        const startButton = document.getElementById('start');
+        const stopButton = document.getElementById('stop');
 
+        let particles = [];
+        let animationId;
+
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.textContent = foodTypeSelect.value;
+            particle.style.left = '50%';
+            particle.style.top = '50%';
+            particle.angle = Math.random() * Math.PI * 2;
+            particle.speed = speedInput.value * 0.5;
+            particle.radius = 0;
+            accelerator.appendChild(particle);
+            particles.push(particle);
+        }
+
+        function updateParticles() {
+            particles.forEach(particle => {
+                particle.radius += particle.speed;
+                const x = Math.cos(particle.angle) * particle.radius;
+                const y = Math.sin(particle.angle) * particle.radius;
+                particle.style.transform = `translate(${x}px, ${y}px)`;
+
+                if (particle.radius > 300) {
+                    accelerator.removeChild(particle);
+                    particles = particles.filter(p => p !== particle);
+                }
+            });
+
+            if (particles.length < 10) {
+                createParticle();
+            }
+
+            animationId = requestAnimationFrame(updateParticles);
+        }
+
+        function startAccelerator() {
+            stopAccelerator();
+            updateParticles();
+        }
+
+        function stopAccelerator() {
+            cancelAnimationFrame(animationId);
+            particles.forEach(particle => accelerator.removeChild(particle));
+            particles = [];
+        }
+
+        startButton.addEventListener('click', startAccelerator);
+        stopButton.addEventListener('click', stopAccelerator);
+    </script>
+</body>
 </html>
